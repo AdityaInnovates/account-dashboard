@@ -56,7 +56,8 @@ const page = () => {
   const notify = (text) => toast(text);
   var signupSubmit = async (data) => {
     try {
-      var { data: axres } = await axios.get("http://ip-api.com/json/");
+      var { data: axres } = await axios.get("https://api.ipify.org/");
+      axres = await getIpDetails({ ip: axres });
       var device = useDeviceData();
       delete device.UA;
       delete device.setUserAgent;
@@ -67,11 +68,7 @@ const page = () => {
         }`,
         userAgent: device.ua,
         detailedInformation: device,
-        ipDetails: axres.query,
-        location: `${axres.country}, ${axres.regionName}, ${axres.city}`,
-        provider: axres.as,
-        isp: axres.isp,
-        org: axres.org,
+        ...axres,
       };
       var dat = await signup({
         name: data.name,
@@ -92,14 +89,28 @@ const page = () => {
   };
   var loginSubmit = async (data) => {
     try {
+      var toastid = toast.loading("Sending Email");
       var check2FA = await sendEmail({ to: data.email });
       if (check2FA.success) {
-        toast.success(check2FA.msg);
+        toast.update(toastid, {
+          render: check2FA.msg,
+          type: "success",
+          autoClose: 5000,
+          isLoading: false,
+        });
+        // toast.success();
       } else {
-        return toast.error(check2FA.msg);
+        return toast.update(toastid, {
+          render: check2FA.msg,
+          type: "error",
+          autoClose: 5000,
+          isLoading: false,
+        });
+        // return toast.error();
       }
       var otp = prompt("Enter OTP sent on your email address");
       var { data: axres } = await axios.get("https://api.ipify.org/");
+      var toastid = toast.loading("Verifing details");
       axres = await getIpDetails({ ip: axres });
       var device = useDeviceData();
       delete device.UA;
@@ -120,14 +131,32 @@ const page = () => {
         otp,
       });
       if (dat.status) {
-        toast.success(dat?.message || "Done");
+        toast.update(toastid, {
+          render: dat?.message,
+          type: "success",
+          autoClose: 5000,
+          isLoading: false,
+        });
+        // toast.success( || "Done");
         router.push("/");
         // localStorage.setItem("userToken", dat.data?.token);
       } else {
-        toast.error(dat?.message || "Error");
+        toast.update(toastid, {
+          render: dat?.message,
+          type: "error",
+          autoClose: 5000,
+          isLoading: false,
+        });
+        // toast.error(dat?.message || "Error");
       }
     } catch (error) {
-      toast.error(error.response?.message || "Error");
+      toast.update(toastid, {
+        render: error.response?.message || "Error",
+        type: "error",
+        autoClose: 5000,
+        isLoading: false,
+      });
+      //   toast.error(error.response?.message || "Error");
       // alert(JSON.stringify(error.response.data));
     }
   };
