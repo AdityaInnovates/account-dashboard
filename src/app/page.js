@@ -159,7 +159,7 @@ export default function Home() {
             >
               {deviceDetails[0] &&
                 deviceDetails.map((device) => (
-                  <div className="flex w-full /h-[10rem] items-center justify-center /border-[1px] /border-white /my-[1rem]">
+                  <div className="flex w-full max-h-[12rem] /h-[10rem] items-center justify-center /border-[1px] /border-white /my-[1rem]">
                     <div className="bg-[#393939] w-[27rem]  h-full /h-[10rem] rounded-md border-[1px] border-[rgba(255,255,255,0.1)] p-[1rem]">
                       <div className="flex flex-col gap-[0.5rem]">
                         <div className="flex justify-between items-center">
