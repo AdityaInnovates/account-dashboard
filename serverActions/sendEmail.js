@@ -1,8 +1,10 @@
 "use server";
 import { cookies } from "next/headers";
-// import Fa_model from "../lib/database/models/fa_model";
-import fa_model from "../lib/database/models/fa_model";
+// import secondstepmodel from "../lib/database/models/secondstepmodel";
+// import secondstepmodel from "../lib/database/models/secondstepmodel";
 import dbConnect from "../lib/database/dbconnect";
+import mongoose from "mongoose";
+import secondstepmodel from "../lib/database/models/secondstepmodel";
 
 const nodemailer = require("nodemailer");
 const sendEmail = async (body) => {
@@ -10,9 +12,9 @@ const sendEmail = async (body) => {
   const { to } = body;
   var email = to;
   var fourdigitotp = Math.floor(1000 + Math.random() * 9000);
-  var data = await fa_model.findOne({ email });
+  var data = await secondstepmodel.findOne({ email });
   if (!data) {
-    var tosave = new fa_model({
+    var tosave = new secondstepmodel({
       email,
       otp: fourdigitotp,
       totalTries: { tries: 1, date: new Date().toDateString() },
@@ -38,7 +40,7 @@ const sendEmail = async (body) => {
         msg: "Max Tries Limit Reached. Try Tommorow",
       };
     } else {
-      await fa_model.findOneAndUpdate(
+      await secondstepmodel.findOneAndUpdate(
         { email },
         {
           "totalTries.tries": 1,
@@ -64,7 +66,7 @@ const sendEmail = async (body) => {
       data?.totalTries?.date &&
       data.totalTries.date != new Date().toDateString()
     ) {
-      await fa_model.findOneAndUpdate(
+      await secondstepmodel.findOneAndUpdate(
         { email },
         {
           "totalTries.tries": 1,
@@ -72,7 +74,7 @@ const sendEmail = async (body) => {
         }
       );
     } else {
-      await fa_model.findOneAndUpdate(
+      await secondstepmodel.findOneAndUpdate(
         { email },
         {
           $inc: {
@@ -101,7 +103,7 @@ async function sendForgetPassMail(newbody) {
   var { to, email } = newbody;
   console.log(newbody);
   var otp = newbody?.otp || Math.floor(1000 + Math.random() * 9000);
-  await fa_model.findOneAndUpdate({ email }, { otp });
+  await secondstepmodel.findOneAndUpdate({ email }, { otp });
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {

@@ -56,6 +56,26 @@ const page = () => {
   const notify = (text) => toast(text);
   var signupSubmit = async (data) => {
     try {
+      var toastid = toast.loading("Sending Email");
+      var check2FA = await sendEmail({ to: data.email });
+      if (check2FA.success) {
+        toast.update(toastid, {
+          render: check2FA.msg,
+          type: "success",
+          autoClose: 5000,
+          isLoading: false,
+        });
+        await new Promise((res) => setTimeout(res, 200));
+        // toast.success();
+      } else {
+        return toast.update(toastid, {
+          render: check2FA.msg,
+          type: "error",
+          autoClose: 5000,
+          isLoading: false,
+        });
+      }
+      var otp = prompt("Enter OTP sent on your email address");
       var { data: axres } = await axios.get("https://api.ipify.org/");
       axres = await getIpDetails({ ip: axres });
       var device = useDeviceData();
@@ -75,6 +95,7 @@ const page = () => {
         email: data.email,
         password: data.password,
         deviceDetails,
+        otp,
       });
       if (dat.status) {
         toast.success(dat?.message || "Done");
@@ -83,6 +104,7 @@ const page = () => {
         toast.error(dat?.message || "Error");
       }
     } catch (error) {
+      console.log(error);
       toast.error(error.response?.success || error.response?.error || "Error");
       // alert(JSON.stringify(error.response.data));
     }
@@ -98,6 +120,7 @@ const page = () => {
           autoClose: 5000,
           isLoading: false,
         });
+        await new Promise((res) => setTimeout(res, 200));
         // toast.success();
       } else {
         return toast.update(toastid, {
@@ -106,7 +129,6 @@ const page = () => {
           autoClose: 5000,
           isLoading: false,
         });
-        // return toast.error();
       }
       var otp = prompt("Enter OTP sent on your email address");
       var { data: axres } = await axios.get("https://api.ipify.org/");

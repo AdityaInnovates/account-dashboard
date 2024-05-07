@@ -22,12 +22,12 @@ export async function middleware(request) {
   ) {
     if (
       !cookies().has("token") &&
-      request.url != "https://account-dashboard-murex.vercel.app/Login"
+      request.url != "http://localhost:3000/Login"
     ) {
       return NextResponse.redirect(new URL("/Login", request.url));
     } else if (
       cookies().has("token") &&
-      request.url == "https://account-dashboard-murex.vercel.app/Login"
+      request.url == "http://localhost:3000/Login"
     ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
