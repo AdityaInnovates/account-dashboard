@@ -111,7 +111,7 @@ const page = () => {
   };
   var loginSubmit = async (data) => {
     try {
-      var toastid = toast.loading("Sending Email");
+      var toastid = toast.loading("Sending Email..");
       var check2FA = await sendEmail({ to: data.email });
       if (check2FA.success) {
         toast.update(toastid, {
